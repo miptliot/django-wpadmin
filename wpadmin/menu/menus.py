@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -18,6 +20,9 @@ class Menu(UserTestElementMixin):
             if hasattr(self.__class__, key):
                 setattr(self, key, kwargs[key])
         self.children = kwargs.get('children', [])
+
+    def is_user_allowed(self, user):
+        return True
 
     def init_with_context(self, context):
         pass
@@ -120,3 +125,75 @@ class BasicLeftMenu(Menu):
                 ),
             ]
 
+
+class RolesBasicLeftMenu(BasicLeftMenu):
+
+    def is_user_allowed(self, user):
+        """
+        Only users that are active are allowed to see this menu.
+        """
+        return user.is_active
+
+    def init_with_context(self, context):
+
+        user = context.get('request').user
+
+        if user.is_staff:
+            return super(RolesBasicLeftMenu, self).init_with_context(context)
+
+        if self.is_user_allowed(user):
+
+            admin_site_name = get_admin_site_name(context)
+
+            self.children += [
+                items.ModelList(
+                    title=u'Курсы',
+                    icon='fa-tasks',
+                    models=(
+                        'plp.models.CourseSession',
+                        'plp.models.Course',
+                    ),
+                ),
+            ]
+
+
+class RolesBasicTopMenu(BasicTopMenu):
+    """
+    Basic default top menu.
+    """
+    def is_user_allowed(self, user):
+        """
+        Only users that are active are allowed to see this menu.
+        """
+        return user.is_active
+
+    def init_with_context(self, context):
+
+        admin_site_name = get_admin_site_name(context)
+
+        if 'django.contrib.sites' in settings.INSTALLED_APPS:
+            from django.contrib.sites.models import Site
+            site_name = Site.objects.get_current().name
+            site_url = 'http://' + Site.objects.get_current().domain
+        else:
+            site_name = _('Site')
+            site_url = '/'
+
+        self.children += [
+            items.MenuItem(
+                title=site_name,
+                url=site_url,
+                icon='fa-bullseye',
+                css_styles='font-size: 1.5em;',
+            ),
+            items.MenuItem(
+                title=_('Dashboard'),
+                icon='fa-tachometer',
+                url=reverse('%s:index' % admin_site_name),
+                description=_('Dashboard'),
+            ),
+            items.UserTools(
+                css_styles='float: right;',
+                is_user_allowed=lambda user: user.is_active,
+            ),
+        ]

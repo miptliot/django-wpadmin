@@ -166,7 +166,10 @@ class ModelList(AppListElementMixin, MenuItem):
                 continue
             title = capfirst(model._meta.verbose_name_plural)
             url = self._get_admin_change_url(model, context)
-            add_url = self._get_admin_add_url(model, context)
+            if perms['add']:
+                add_url = self._get_admin_add_url(model, context)
+            else:
+                add_url = None
             item = MenuItem(
                 title=title, url=url, description=title, add_url=add_url)
             self.children.append(item)
