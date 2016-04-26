@@ -150,7 +150,6 @@ class RolesBasicLeftMenu(BasicLeftMenu):
                     title=u'Курсы',
                     icon='fa-tasks',
                     models=(
-                        'plp.models.CourseSession',
                         'plp.models.Course',
                     ),
                 ),
