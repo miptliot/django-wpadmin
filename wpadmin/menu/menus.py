@@ -138,21 +138,24 @@ class RolesBasicLeftMenu(BasicLeftMenu):
 
         user = context.get('request').user
 
-        if user.is_staff:
-            return super(RolesBasicLeftMenu, self).init_with_context(context)
-
         if self.is_user_allowed(user):
 
             admin_site_name = get_admin_site_name(context)
 
             self.children += [
-                items.ModelList(
+                items.MenuItem(
                     title=u'Курсы',
-                    icon='fa-tasks',
-                    models=(
-                        'plp.models.Course',
-                    ),
                 ),
+                items.MenuItem(
+                    title=u'Описания',
+                    icon='fa-tasks',
+                    url='/pse/plp/course'
+                ),
+                items.MenuItem(
+                    title=u'Статистика',
+                    icon='fa-tasks',
+                    url='/pse/plp/course/statistics'
+                )
             ]
 
 
