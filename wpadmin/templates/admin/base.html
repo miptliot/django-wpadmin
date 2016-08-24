@@ -27,6 +27,8 @@
 {# WP Admin end #}
 <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
 <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
+<script src="{% static 'js/jquery.min.js' %}"
+{% include 'autocomplete_light/static.html' %}
 {% block extrahead %}{% endblock %}
 {# WP Admin start #}
 <script type="text/javascript">
